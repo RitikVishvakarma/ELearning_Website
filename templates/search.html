@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Free Video Course{% endblock title %}
+{% block js %}
+<script>
+let previews =document.getElementsByClassName('preview');
+Array.from(previews).forEach((element)=>{
+    element.innerHTML = element.innerText
+}) 
+</script>
+{% endblock js %}
+{% block videosactive %} active {% endblock videosactive %}
+{% block body %}
+<div class="container">
+    <h1 class="page-header">
+        Search Results
+        <small>for {{query}} </small>
+    </h1>
+    <hr>
+    {% if allvds|length < 1 %}
+    <p>No search results</p>
+    Your search query <b> {{query}} </b> did not match any documents. <br>
+    Suggestions:
+    <ul>
+    <li>Make sure that all words are spelled correctly.</li>
+    <li>Try different keywords.</li>
+    <li>Try more general keywords.</li>
+    <li>Try fewer keywords.</li>
+    </ul>
+    {% endif %}
+    {% for vds in allvds %}
+    <h2>
+        <a  href="/videos/{{vds.slug}}" class="text-dark">{{vds.title}}</a>
+    </h2>
+    <p><div class="preview">{{vds.cont|safe| truncatechars:350}}</div></p>
+    <a class="btn btn-outline-danger" href="/videos/{{vds.slug}}">Read More <span class="glyphicon glyphicon-chevron-right"><span></a>
+    <hr>
+    {% endfor %}
+
+    <!--Pagination-->
+    <div class="clearfix mb-2">
+    <nav aria-label="Page navigation example">
+       <ul class="list-unstyled"> {% comment %}  class="pagination justify-content-center" {% endcomment %}
+        {% if allvds.has_previous %}
+          <li class="page-item">
+            <a class="float-left btn btn-outline-danger" href="?page={{ allvds.previous_page_number }}&query={{ query|urlencode }}">Previous</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <a class="float-left btn btn-outline-danger" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+          </li>
+        {% endif %}
+        {% if allvds.has_next %}
+          <li class="page-item float-right">
+            <a class="btn btn-outline-danger" href="?page={{ allvds.next_page_number }}&query={{ query|urlencode }}">Next</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <a class="float-right btn btn-outline-danger" href="#" tabindex="-1" aria-disabled="true">Next</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+    </div>
+    <!--end of Pagination-->
+
+</div>
+{% endblock body %}

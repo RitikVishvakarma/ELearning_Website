@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>{% block title %}{% endblock title %}</title>
+    <style>
+    .commentReplies {
+        background-color: rgb(231, 231, 233);
+        margin: 18px 3px;
+    }
+
+    .commentReplies img {
+        margin: 8px 14px;
+    }
+    </style>
+    <style>
+    @media only screen and (max-width: 560px) {
+        img.rounded-circle{
+            height: 0px;
+            visibility: hidden;
+        }
+    }
+    </style>
+</head>
+
+<body class="d-flex flex-column h-100">
+    <header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand h1" href="#">E-Learning</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item {% block homeactive %}{% endblock homeactive %}">
+                    <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item {% block videosactive %}{% endblock videosactive %}">
+                    <a class="nav-link" href="/videos">Video</a>
+                </li>
+                <li class="nav-item {% block contactactive %}{% endblock contactactive %}">
+                    <a class="nav-link" href="/contact">Contact</a>
+                </li>
+                <li class="nav-item {% block aboutactive %}{% endblock aboutactive %}">
+                    <a class="nav-link" href="/about">About</a>
+                </li>
+            </ul>
+            <form method='get' action='/search' class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" name='query' id='query' placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 mr-3 my-sm-0" type="submit">Search</button>
+            </form>
+            {% if user.is_authenticated %}
+            <a class="text-light">
+                            Welcome {{request.user}}
+                        </a>
+            <a href="/logout" class="btn btn-outline-danger ml-2">Logout</a>
+            {% else %}
+            <!-- Button trigger Loginmodal -->
+            <button type="button" class="btn btn-outline-danger mx-2" data-toggle="modal" data-target="#loginModal">
+                Login
+            </button>
+            <!-- Button trigger SignUpmodal -->
+            <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#signupModal">
+                SignUp
+            </button>
+            {% endif %}
+        </div>
+    </nav>
+    </header>
+{% for message in messages %}
+    <div class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show" role="alert">
+  <strong>Message!</strong> {{ message }}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+    {% endfor %}
+    <!-- -Signup Modal -->
+    <div class="modal fade" id="signupModal" tabindex="-1" role="dialog" aria-labelledby="signupModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="signupModalLabel">SignUp Here</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/signup/" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="uname">Username</label>
+                            <input type="text" class="form-control" id="uname" name="uname"
+                                placeholder="Choose a Unique Username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="fname">First Name</label>
+                            <input type="text" class="form-control" id="fname" name="fname"
+                                placeholder="First Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lname">Last Name</label>
+                            <input type="text" class="form-control" id="lname" name="lname"
+                                placeholder="Last Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email address</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Email address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pass1">Password</label>
+                            <input type="password" class="form-control" id="pass1" name="pass1"
+                                placeholder="Choose your password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pass2">Confirm Password</label>
+                            <input type="password" class="form-control" id="pass2" name="pass2"
+                                placeholder="Confirm your password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- -Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Login Here</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/login/" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="luname">Username</label>
+                            <input type="text" class="form-control" id="luname" name="luname"
+                                placeholder="Username">
+                        </div>
+                       
+                        <div class="form-group">
+                            <label for="lpass">Password</label>
+                            <input type="password" class="form-control" id="lpass" name="lpass"
+                                placeholder="Password">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    {% block body %}{% endblock body %}
+
+    <footer class="footer mt-auto bg-dark py-3 text-light">
+        <p class="copyright mb-0 text-center">Copyright &copy; 2021-2022 <br>E-Learning</p>
+    </footer>
+
+    {% block js %}{% endblock js %}
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

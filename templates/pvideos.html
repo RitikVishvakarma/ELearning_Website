@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %}Free Video Course {% endblock title %}
+{% load humanize %}
+{% load extras %}
+{% block body %}
+<div class="container">
+    <div class="embed-responsive embed-responsive-21by9">
+        <iframe class="embed-responsive-item" src="{{vds.vurl}}" allowfullscreen></iframe>
+    </div>
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active font-weight-bold" id="home-tab" data-toggle="tab" href="#overview" role="tab"
+                aria-controls="home" aria-selected="true">Overview</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link font-weight-bold" id="profile-tab" data-toggle="tab" href="#coursecontent" role="tab"
+                aria-controls="profile" aria-selected="false">Course Content</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="home-tab">
+            <h2>{{vds.title}}</h2>
+            <p>{{vds.cont|safe}}</p>
+        </div>
+        <div class="tab-pane fade" id="coursecontent" role="tabpanel" aria-labelledby="profile-tab">
+            this is coursecontent
+        </div>
+    </div>
+</div>
+<div class="container">
+    <h2>Comments({{comments.count}})</h2>
+    {% if user.is_authenticated %}
+    <form action="/videos/videoComment" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="comment">Post Comment</label>
+            <input type="text" name="comment" class="form-control" placeholder="Enter comment here">
+        </div>
+        <input type="hidden" name="videoSno" value="{{vds.sno}}">
+        <input type="hidden" name="rsno" value="">
+        <button type="submit" class="btn btn-outline-primary">Submit</button>
+    </form>
+    {% else %}
+    Please login to post a comment
+    {% endif %}
+    {% for comment in comments %}
+    <div class="row my-3">
+        <div class="col-md-1">
+            <img class="w-100 d-block mx-auto rounded-circle img-fluid border border-dark rounded"
+                src="/static/img/commentImg.png" alt="user">
+        </div>
+        <div class="col-md-11"><b>{{comment.user.username}}</b> <span
+                class="badge badge-secondary">{{comment.timestamp|naturaltime}}</span>
+            <div>{{comment.comment}}</div>
+            <div class="replay mx-0">
+                {% if user.is_authenticated %}
+                <button class="btn btn-primary btn-sm" type="button" data-toggle="collapse"
+                    data-target="#replayBox{{comment.sno}}" aria-expanded="false"
+                    aria-controls="replayBox{{comment.sno}}">
+                    Replay
+                </button>
+                <div class="collapse" id="replayBox{{comment.sno}}">
+                    <div class="card card-body my-2">
+                        <form action="/videos/videoComment" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="comment">Post a replay</label>
+                                <input type="text" name="comment" class="form-control" placeholder="Enter replay here">
+                                <input type="hidden" name="rsno" value="{{comment.sno}}">
+                            </div>
+                            <input type="hidden" name="videoSno" value="{{vds.sno}}">
+                            <button type="submit" class="btn btn-outline-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <button class="btn btn-danger btn-sm" type="button" disabled>
+                    Replay
+                </button>
+                {% endif %}
+                <div class="commentReplies my-2">
+                    {% for replay in replayDict|get_val:comment.sno %} <!-- yaha pr jab mene for loop lagaya to mujhe key, value pair mil rahe the jabki mujhe key ke corrospnding values chahiye thi -->
+                    <div class="row my-2">
+                        <div class="col-md-1">
+                            <img class="w-75 d-block mx-auto rounded-circle img-fluid border border-dark rounded" src="/static/img/commentImg.png" alt="user">
+                        </div>
+                        <div class="col-md-11">
+                            <b>{{replay.user.username}}</b> <span class="badge badge-secondary">{{replay.timestamp|naturaltime}}</span>
+                            <div>{{replay.comment}}</div>
+                        </div>
+                        <br>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock body %}

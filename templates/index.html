@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}E-Learning{% endblock title %}
+{% block homeactive %} active {% endblock homeactive %}
+{% block body %}
+<div class="jumbotron">
+    {% if user.is_authenticated %}
+  <h1 class="display-4 text-center">Hello, {{user.first_name}}!</h1>
+  {% else %}
+  <h1 class="display-4 text-center">Hello, Friends!</h1>
+  {% endif %}
+  <p class="text-center font-weight-bold">"Anyone who has never made a mistake has never tried anything new."</p>
+</div class="container">
+    <div>
+        <div class="col-lg-8 col-xs-auto col-md-10 mx-auto">
+            <h1>Learn Programming in fun way</h1>
+            <p>This channel is all about learning programming languages. I make free programming tutorials from beginner to
+                advanced level.
+            </p>
+            <p>
+                This is my attempt to teach basics and those coding techniques to people in short
+                time. All programming videos is in Hindi. If my videos helped you in any way so please support me to make such
+                more videos :)
+            </p>
+            <div class="text-center my-2">
+                <a href="/videos" class="btn btn-outline-primary">Free video tutoria</a>
+                <a href="/about" class="btn btn-outline-success">About</a>
+                <a href="/contact" class="btn btn-outline-danger">Contact</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock body %}
