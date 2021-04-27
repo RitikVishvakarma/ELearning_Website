@@ -23,7 +23,15 @@
             <p>{{vds.cont|safe}}</p>
         </div>
         <div class="tab-pane fade" id="coursecontent" role="tabpanel" aria-labelledby="profile-tab">
-            this is coursecontent
+            <div class="card text-white bg-dark my-2" style="max-width: 22rem;">
+                <div class="card-body py-2" id="scroll">
+                    {% for c in coursecontent %}
+                    <a href="{{c.slug}}" style="color: white !important;">
+                        <ul><span>{{c.position}}</span>. {{c.title}}</ul>
+                    </a><hr>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -38,7 +46,7 @@
         </div>
         <input type="hidden" name="videoSno" value="{{vds.sno}}">
         <input type="hidden" name="rsno" value="">
-        <button type="submit" class="btn btn-outline-primary">Submit</button>
+        <button type="submit" class="btn btn-outline-primary mb-2">Submit</button>
     </form>
     {% else %}
     Please login to post a comment

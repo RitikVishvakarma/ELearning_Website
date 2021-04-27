@@ -3,6 +3,7 @@
 {% block homeactive %} active {% endblock homeactive %}
 {% block body %}
 <div class="jumbotron">
+    <img class="d-block mx-auto rounded-circle img-fluid border border-dark rounded" src="/static/img/ml.png" alt="user">
     {% if user.is_authenticated %}
   <h1 class="display-4 text-center">Hello, {{user.first_name}}!</h1>
   {% else %}

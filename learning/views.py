@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.paginator import Paginator
 from .templatetags import extras
+
 # Create your views here.
 def index(request):
     return render(request, "index.html")
@@ -49,13 +50,22 @@ def SignUp(request):
         if pass1 != pass2:
             messages.error(request, 'Passwords do not match')
             return redirect('index')
+        if User.objects.filter(email=email).exists():
+            messages.error(request, 'Email you entered has already been taken. Please try another email.')
+            return redirect('index')
 
         # Create the user
-        myuser = User.objects.create_user(uname, email, pass1)
-        myuser.first_name = fname
-        myuser.last_name = lname
-        myuser.save()
-        messages.success(request, "Your account has been successfully created")
+        try:
+            myuser= User.objects.get(username=uname)
+            messages.error(request, 'The username you entered has already been taken. Please try another username.')
+            return redirect('index')
+        
+        except User.DoesNotExist:
+            myuser = User.objects.create_user(uname, email, pass1)
+            myuser.first_name = fname
+            myuser.last_name = lname
+            myuser.save()
+            messages.success(request, "Your account has been successfully created")
         return redirect('index')
 
     else:
@@ -89,21 +99,12 @@ def about(request):
 
 def allsubject(request):
     subj = Subject.objects.all()
-    # print(videos)
     context = {'subj': subj}
     return render(request, 'allsubject.html', context)
 
-
-# def pvideo(request, slug):
-#     vds = Videos.objects.filter(slug=slug).values()
-#     comments = VideoComment.objects.filter(video=vds)
-#     # cont = Videos.objects.filter(subject='1')
-#     # cont = Videos.objects.filter(subject=[video.get('subject') for video in vds])
-#     context = {'vds':vds, 'comments':comments, 'user':request.user}
-#     return render(request, 'pvideo.html', context)
-
 def pvideos(request, slug):
     vds = Videos.objects.filter(slug=slug).first()
+    coursecontent = Videos.objects.filter(subject=vds.subject)
     comments = VideoComment.objects.filter(video=vds, parent=None)
     replies = VideoComment.objects.filter(video=vds).exclude(parent=None)
     replayDict = {}
@@ -113,7 +114,7 @@ def pvideos(request, slug):
         else:
             replayDict[replay.parent.sno].append(replay)
     # print(replayDict)
-    context = {'vds':vds, 'comments':comments, 'user':request.user, 'replayDict':replayDict}
+    context = {'vds':vds, 'comments':comments, 'coursecontent':coursecontent, 'user':request.user, 'replayDict':replayDict}
     return render(request, 'pvideos.html', context)
 
 def search(request):
@@ -124,7 +125,7 @@ def search(request):
         allvdstitle = Videos.objects.filter(title__icontains=query)
         allvdscontent = Videos.objects.filter(cont__icontains=query)
         allvds = allvdstitle.union(allvdscontent)
-        paginator = Paginator(allvds, 10)
+        paginator = Paginator(allvds, 5)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         
